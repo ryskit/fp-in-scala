@@ -139,9 +139,16 @@ object List {
   // [難問] foldRight をベースとして foldLeft を記述することは可能か。その逆はどうか。
   // foldLeft を使って foldRight を実装すると、foldRight を末尾再帰的に実行することが可能となり、
   // 大きなリストでもスタックオーバーフローが発生しなくなるので便利である。
+  def foldRightUseFoldLeft1[A, B](l: List[A], z: B)(f: (A, B) => B): B =
+    foldLeft(reverse(l), z)((b, a) => f(a, b))
 
   // EXERCISE3.14
   // foldLeft または foldRight をベースとして append を実装せよ。
+  def appendLF[A](l1: List[A], l2: List[A]): List[A] =
+    foldLeft(reverse(l1), l2)((acc, l) => Cons(l, acc))
+
+  def appendRF[A](l1: List[A], l2: List[A]): List[A] =
+    foldRight(l1, l2)((l, acc) => Cons(l, acc))
 
   // EXERCISE3.15
   // [難問] 複数のリストからなるリストを1つのリストとして連結する関数を記述せよ。

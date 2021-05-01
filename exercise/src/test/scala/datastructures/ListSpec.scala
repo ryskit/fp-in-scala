@@ -90,4 +90,21 @@ class ListSpec extends AnyFunSpec {
       assert(List.reverse(l) == List(5, 4, 3, 2, 1))
     }
   }
+
+  describe("EXERCISE3.14") {
+    val l1 = List(1, 2, 3, 4, 5)
+    val l2 = List(6, 7, 8, 9, 10)
+    val exp = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    describe("appendLF") {
+      it("should be true") {
+        assert(List.appendLF(l1, l2) == exp)
+      }
+    }
+
+    describe("appendRF") {
+      it("should be true") {
+        assert(List.appendRF(l1, l2) == exp)
+      }
+    }
+  }
 }
