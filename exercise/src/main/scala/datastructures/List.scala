@@ -125,10 +125,15 @@ object List {
 
   // EXERCISE3.11
   // foldLeft を使って sum, product, およびリストの長さを計算する関数を記述せよ。
+  def sumLF(l: List[Int]) = foldLeft(l, 0)(_ + _)
+  def productLF(l: List[Double]) = foldLeft(l, 1.0)(_ * _)
+  def lengthLF(l: List[Int]) = foldLeft(l, 0)((acc, _) => acc + 1)
 
   // EXERCISE3.12
   // 要素が逆に並んだリストを返す関数を記述せよ。List(1, 2, 3)が与えられた場合、この関数はList(3, 2, 1)を返す。
   // 畳み込みを使って記述できるかどうか確認すること。
+  def reverse[A](l: List[A]): List[A] =
+    foldLeft(l, List[A]())((acc, head) => Cons(head, acc))
 
   // EXERCISE3.13
   // [難問] foldRight をベースとして foldLeft を記述することは可能か。その逆はどうか。

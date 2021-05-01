@@ -62,4 +62,32 @@ class ListSpec extends AnyFunSpec {
       assert(List.foldLeft(l, 0)(_ + _) == 15)
     }
   }
+
+  describe("EXERCISE3.11") {
+    describe("sumLF") {
+      it("should be true") {
+        val l = List(1, 2, 3, 4, 5)
+        assert(List.sumLF(l) == 15)
+      }
+    }
+    describe("productLF") {
+      it("should be true") {
+        val l = List(1.0, 2.0, 3.0, 4.0, 5.0)
+        assert(List.productLF(l) == 120.0)
+      }
+    }
+    describe("lengthLF") {
+      it("should be true") {
+        val l = List(1, 2, 3, 4, 5)
+        assert(List.lengthLF(l) == 5)
+      }
+    }
+  }
+
+  describe("EXERCISE3.12") {
+    it("should be true") {
+      val l = List(1, 2, 3, 4, 5)
+      assert(List.reverse(l) == List(5, 4, 3, 2, 1))
+    }
+  }
 }
