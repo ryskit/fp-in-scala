@@ -139,7 +139,7 @@ object List {
   // [難問] foldRight をベースとして foldLeft を記述することは可能か。その逆はどうか。
   // foldLeft を使って foldRight を実装すると、foldRight を末尾再帰的に実行することが可能となり、
   // 大きなリストでもスタックオーバーフローが発生しなくなるので便利である。
-  def foldRightUseFoldLeft1[A, B](l: List[A], z: B)(f: (A, B) => B): B =
+  def foldRightUseFoldLeft[A, B](l: List[A], z: B)(f: (A, B) => B): B =
     foldLeft(reverse(l), z)((b, a) => f(a, b))
 
   // EXERCISE3.14
@@ -153,4 +153,69 @@ object List {
   // EXERCISE3.15
   // [難問] 複数のリストからなるリストを1つのリストとして連結する関数を記述せよ。
   // この関数の実行時間はすべてのリストの長さの合計に対して線形になるはずである。すでに定義した関数を使ってみること。
+  def concat[A](l: List[List[A]]): List[A] =
+    foldRight(l, List[A]())(append)
+
+  // EXERCISE3.16
+  // 各要素に1を足すことで整数のリストを変換する関数を記述せよ。
+  // 注意: これは新しいListを返す純粋関数になるはずである。
+  def add1(l: List[Int]): List[Int] =
+    foldRight(l, List[Int]())((a, acc) => Cons(a + 1, acc))
+
+  // EXERCISE3.17
+  // List[Double]の各値をStringに変換する関数を記述せよ。
+  // d.toString という式を使って d: Double を String に変換できる
+  def doubleToString(l: List[Double]): List[String] =
+    foldRight(l, List[String]())((head, acc) => Cons(head.toString, acc))
+
+  // EXERCISE3.18
+  // リストの各要素を変更し、かつリストの構造をそのまま保つ総称関数mapを記述せよ。
+  // この関数のシグネチャは以下の通り。
+  def map[A, B](l: List[A])(f: A => B): List[B] =
+    foldRight(l, List[B]())((head, acc) => Cons(f(head), acc))
+
+  def mapUseLeftFold[A, B](l: List[A])(f: A => B): List[B] =
+    foldRightUseFoldLeft(l, List[B]())((head, acc) => Cons(f(head), acc))
+
+  // EXERCISE3.19
+  // 与えられた述語条件がみたされるまでリストから要素を削除する filter関数 を記述せよ。
+  // この関数を使って List[Int] から奇数をすべて削除せよ。
+  def filter[A](l: List[A])(f: A => Boolean): List[A] =
+    foldRightUseFoldLeft(l, List[A]())(
+      (head, acc) => if (f(head)) Cons(head, acc) else acc
+    )
+
+  // EXERCISE3.20
+  // map と同じような働きをする flatMap関数 を記述せよ。この関数は単一の結果ではなくリストを返し、
+  // そのリストは最終的な結果のリストに挿入されなければならない。この関数のシグネチャは以下の通り。
+  // たとえば、 flatMap(List(1, 2, 3))(i => List(i, i)) は List(1,1,2,2,3,3) になるはずである。
+  def flatMap[A, B](l: List[A])(f: A => List[B]): List[B] =
+    foldRightUseFoldLeft(l, List[B]())((head, acc) => appendLF(f(head), acc))
+
+  // EXERCISE3.21
+  // flatMap を使って filter を実装せよ。
+  def filterUseFlatMap[A](l: List[A])(f: A => Boolean): List[A] =
+    flatMap(l)(a => if (f(a)) Cons(a, Nil) else Nil)
+
+  // EXERCISE3.22
+  // リストを2つ受け取り、対応する要素同士を足し合わせて新しいリストを生成する関数を記述せよ。
+  // たとえば、List(1, 2, 3) と List(4, 5, 6) は List(5, 7, 9) になる。
+  def sumWithPair(l1: List[Int], l2: List[Int]): List[Int] = (l1, l2) match {
+    case (_, Nil) => Nil
+    case (Nil, _) => Nil
+    case (Cons(l1Head, l1Tail), Cons(l2Head, l2Tail)) =>
+      Cons(l1Head + l2Head, sumWithPair(l1Tail, l2Tail))
+  }
+
+  // EXERCISE3.23
+  // EXERCISE3.22 で作成した関数を、整数または加算に限定されなように一般化せよ。
+  // 一般化された関数には zipWith という名前を付けること。
+  def zipWith[A, B, C](l1: List[A], l2: List[B])(f: (A, B) => C): List[C] =
+    (l1, l2) match {
+      case (_, Nil) => Nil
+      case (Nil, _) => Nil
+      case (Cons(l1Head, l1Tail), Cons(l2Head, l2Tail)) =>
+        Cons(f(l1Head, l2Head), zipWith(l1Tail, l2Tail)(f))
+    }
+
 }
