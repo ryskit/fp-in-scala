@@ -182,4 +182,12 @@ class ListSpec extends AnyFunSpec {
       assert(List.zipWith(l1, l2)(f) == List("1A", "2B", "3C"))
     }
   }
+
+  describe("EXERCISE3.24") {
+    it("should be true") {
+      val l1 = List(1, 3, 2, 4, 5, 6)
+      val l2 = List(5, 2)
+      assert(List.hasSubsequence(l1, l2))
+    }
+  }
 }

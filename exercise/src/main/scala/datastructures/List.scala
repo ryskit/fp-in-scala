@@ -1,5 +1,7 @@
 package datastructures
 
+import datastructures.List.dropWhile
+
 sealed trait List[+A]
 case object Nil extends List[Nothing]
 case class Cons[+A](head: A, tail: List[A]) extends List[A]
@@ -127,7 +129,7 @@ object List {
   // foldLeft を使って sum, product, およびリストの長さを計算する関数を記述せよ。
   def sumLF(l: List[Int]) = foldLeft(l, 0)(_ + _)
   def productLF(l: List[Double]) = foldLeft(l, 1.0)(_ * _)
-  def lengthLF(l: List[Int]) = foldLeft(l, 0)((acc, _) => acc + 1)
+  def lengthLF[A](l: List[A]) = foldLeft(l, 0)((acc, _) => acc + 1)
 
   // EXERCISE3.12
   // 要素が逆に並んだリストを返す関数を記述せよ。List(1, 2, 3)が与えられた場合、この関数はList(3, 2, 1)を返す。
@@ -217,5 +219,23 @@ object List {
       case (Cons(l1Head, l1Tail), Cons(l2Head, l2Tail)) =>
         Cons(f(l1Head, l2Head), zipWith(l1Tail, l2Tail)(f))
     }
+
+  // EXERCISE3.24
+  // [難問] 例として、Listに別のListがサブシーケンスとして含まれているかどうかを調べる hasSubsequence を実装せよ。
+  // たとえば、List(1, 2, 3, 4) には、List(1,2)、List(2,3)、List(4) などがサブシーケンスとして含まれている。
+  // 純粋関数型で、コンパクトで、かつ効率的な実装を見つけ出すのは難しいかもしれない。その場合は、それでかまわない。
+  // どのようなものであれ、最も自然な関数を実装すること。その実装については、第5章で改めて取り上げ、改良する予定である。
+  // なおScalaでは、任意の値x および yに対し、x == y という式を使って等しいかどうかを比較できる。
+  def startsWith[A](l: List[A], prefix: List[A]): Boolean = (l, prefix) match {
+    case (_, Nil)                              => true
+    case (Cons(h, t), Cons(h2, t2)) if h == h2 => startsWith(t, t2)
+    case _                                     => false
+  }
+
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = sup match {
+    case Nil                       => sub == Nil
+    case _ if startsWith(sup, sub) => true
+    case Cons(_, t)                => hasSubsequence(t, sub)
+  }
 
 }
