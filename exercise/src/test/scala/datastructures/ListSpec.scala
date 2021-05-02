@@ -185,9 +185,15 @@ class ListSpec extends AnyFunSpec {
 
   describe("EXERCISE3.24") {
     it("should be true") {
-      val l1 = List(1, 3, 2, 4, 5, 6)
-      val l2 = List(5, 2)
+      val l1 = List(1, 2, 3, 4, 5, 6)
+      val l2 = List(2, 3, 4)
       assert(List.hasSubsequence(l1, l2))
+    }
+
+    it("should be false") {
+      val l1 = List(1, 3, 2, 4, 5, 6)
+      val l2 = List(1, 2, 3)
+      assert(!List.hasSubsequence(l1, l2))
     }
   }
 }
