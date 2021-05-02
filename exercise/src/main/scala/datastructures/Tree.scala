@@ -36,4 +36,24 @@ object Tree {
     case Branch(l, r) => Branch(map(l)(f), map(r)(f))
   }
 
+  // EXERCISE3.29
+  // size, maximum, depth, map を一般化し、それらの類似点を抽象化する新しい fold関数 を記述せよ。
+  // そして、このより汎用的な fold関数 を使ってそれらを再実装せよ。
+  // この fold関数 と List の左畳み込みおよび右畳み込みの間にある類似性を抽出することは可能か。
+  def fold[A, B](tree: Tree[A])(f: A => B)(g: (B, B) => B): B = tree match {
+    case Leaf(v)      => f(v)
+    case Branch(l, r) => g(fold(l)(f)(g), fold(r)(f)(g))
+  }
+
+  def sizeUseFold[A](tree: Tree[A]): Int =
+    fold(tree)(_ => 1)((x, y) => 1 + x + y)
+
+  def maximumUseFold(tree: Tree[Int]): Int =
+    fold(tree)(x => x)((l, r) => if (l > r) l else r)
+
+  def depthUseFold[A](tree: Tree[A]): Int =
+    fold(tree)(_ => 1)((l, r) => if (l > r) l + 1 else r + 1)
+
+  def mapUseFold[A, B](tree: Tree[A])(f: A => B): Tree[B] =
+    fold(tree)(a => Leaf(f(a)): Tree[B])(Branch(_, _))
 }

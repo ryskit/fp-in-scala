@@ -47,4 +47,30 @@ class TreeSpec extends AnyFunSpec {
       )
     }
   }
+
+  describe("EXERCISE3.29") {
+    describe("sizeUseFold") {
+      it("should be true") {
+        val b = Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4)))
+        assert(Tree.sizeUseFold(b) == 7)
+      }
+    }
+
+    describe("maximumUseFold") {
+      it("should be true") {
+        val b = Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4)))
+        assert(Tree.maximumUseFold(b) == 4)
+      }
+    }
+
+    describe("depthUseFold") {
+      it("should be true") {
+        val b = Branch(
+          Branch(Leaf(1), Leaf(3)),
+          Branch(Branch(Leaf(1000), Branch(Leaf(1), Leaf(5))), Leaf(100))
+        )
+        assert(Tree.depthUseFold(b) == 5)
+      }
+    }
+  }
 }
