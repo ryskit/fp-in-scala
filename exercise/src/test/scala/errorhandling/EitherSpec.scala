@@ -29,4 +29,25 @@ class EitherSpec extends AnyFunSpec {
       }
     }
   }
+
+  describe("EXERCISE4.7") {
+    describe("sequence") {
+      it("should be true") {
+        assert(
+          Either.sequence(List(Right(1), Right(2), Right(3))) == Right(
+            List(1, 2, 3)
+          )
+        )
+      }
+    }
+
+    describe("traversal") {
+      it("should be true") {
+        assert(
+          Either
+            .traverse(List(1, 2, 3))(a => Right(a * 2)) == Right(List(2, 4, 6))
+        )
+      }
+    }
+  }
 }
