@@ -67,7 +67,9 @@ class OptionSpec extends AnyFunSpec {
   describe("EXERCISE4.5") {
     it("should be true") {
       val l = List(1, 2, 3)
-      assert(Option.traverse(l) == Some(List(1, 2, 3)))
+      assert(
+        Option.traverse(l)(x => Some(x.toString)) == Some(List("1", "2", "3"))
+      )
     }
   }
 }
