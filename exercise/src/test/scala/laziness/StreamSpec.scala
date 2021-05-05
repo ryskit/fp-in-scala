@@ -98,27 +98,96 @@ class StreamSpec extends AnyFunSpec {
   describe("EXERCISE5.12") {
     describe("onesUseUnfold") {
       it("should be true") {
-        println(onesUseUnfold().take(5).toList == List(1, 1, 1, 1, 1))
+        assert(onesUseUnfold().take(5).toList == List(1, 1, 1, 1, 1))
       }
     }
 
     describe("constantUseUnfold") {
       it("should be true") {
-        println(constantUseUnfold(2).take(5).toList == List(2, 2, 2, 2, 2))
+        assert(constantUseUnfold(2).take(5).toList == List(2, 2, 2, 2, 2))
       }
     }
 
     describe("fromUseUnfold") {
       it("should be true") {
-        println(fromUseUnfold(1).take(5).toList == List(1, 2, 3, 4, 5))
+        assert(fromUseUnfold(1).take(5).toList == List(1, 2, 3, 4, 5))
       }
     }
 
     describe("fibsUseUnfold") {
       it("should be true") {
-        println(fibsUseUnfold().take(5).toList == List(0, 1, 1, 2, 3))
+        assert(fibsUseUnfold().take(5).toList == List(0, 1, 1, 2, 3))
       }
     }
   }
 
+  describe("EXERCISE5.13") {
+    describe("mapUseUnfold") {
+      it("should be true") {
+        val s = Stream.apply(1, 2, 3)
+        assert(s.mapUseUnfold(x => x * x).toList == List(1, 4, 9))
+      }
+    }
+
+    describe("takeUseUnfold") {
+      it("should be true") {
+        val s = Stream.apply(1, 2, 3, 4, 5)
+        assert(s.takeUseUnfold(3).toList == List(1, 2, 3))
+      }
+    }
+
+    describe("takeWhileUseUnfold") {
+      it("should be true") {
+        val s = Stream.apply(1, 2, 3, 4, 5)
+        assert(s.takeWhileUseUnfold(_ < 3).toList == List(1, 2))
+      }
+    }
+
+    describe("zipWith") {
+      it("should be true") {
+        val s1 = Stream.apply(1, 2)
+        val s2 = Stream.apply(6, 7)
+        assert(s1.zipWith(s2)(_ + _).toList == List(7, 9))
+      }
+    }
+
+    describe("zipAll") {
+      it("should be true") {
+        val s1 = Stream.apply(1, 2)
+        val s2 = Stream.apply(6, 7, 11)
+        assert(
+          s1.zipAll(s2).toList == List(
+            (Some(1), Some(6)),
+            (Some(2), Some(7)),
+            (None, Some(11))
+          )
+        )
+      }
+    }
+  }
+
+  describe("EXERCISE5.14") {
+    it("should be true") {
+      val s1 = Stream.apply(1, 2, 3, 4, 5)
+      val s2 = Stream.apply(1, 2, 3)
+      assert(s1.startsWith(s2))
+    }
+  }
+
+  describe("EXERCISE5.15") {
+    it("should be true") {
+      val s = Stream.apply(1, 2, 3)
+      assert(
+        s.tails.toList
+          .map(_.toList) == List(List(1, 2, 3), List(2, 3), List(3))
+      )
+    }
+  }
+
+  describe("EXERCISE5.16") {
+    it("should be true") {
+      val s = Stream.apply(1, 2, 3)
+      assert(s.scanRight(0)(_ + _).toList == List(6, 5, 3, 0))
+    }
+  }
 }

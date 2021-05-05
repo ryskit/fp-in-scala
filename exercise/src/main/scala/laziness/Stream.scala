@@ -93,6 +93,76 @@ trait Stream[+A] {
     foldRight(empty[B])((a, b) => f(a).append(b))
 
   def find(f: A => Boolean): Option[A] = filter(f).headOption
+
+  // EXERCISE5.13
+  // unfold を使って map, take, takeWhile, zipWith, zipAll を実装せよ。
+  // zipAll 関数では、どちらかのストリームに要素が残っている限り、評価を続ける必要がある。
+  // この関数はストリームが完全に評価されたかどうかを示すのにOptionを使用する。
+  def mapUseUnfold[B](f: A => B): Stream[B] = unfold(this) {
+    case Cons(h, t) => Some((f(h()), t()))
+    case _          => None
+  }
+
+  def takeUseUnfold(n: Int): Stream[A] =
+    unfold(this) {
+      case Cons(h, t) if n > 1  => Some(h(), t())
+      case Cons(h, _) if n == 1 => Some(h(), empty)
+      case _                    => None
+    }
+
+  def takeWhileUseUnfold(f: A => Boolean): Stream[A] =
+    unfold(this) {
+      case Cons(h, t) if f(h()) => Some(h(), t())
+      case _                    => None
+    }
+
+  def zipWith[B, C](s2: Stream[B])(f: (A, B) => C): Stream[C] =
+    unfold((this, s2)) {
+      case (Cons(h1, t1), Cons(h2, t2)) => Some((f(h1(), h2()), (t1(), t2())))
+      case _                            => None
+    }
+
+  def zipAll[B](s2: Stream[B]): Stream[(Option[A], Option[B])] =
+    unfold((this, s2)) {
+      case (Cons(h1, t1), Cons(h2, t2)) =>
+        Some((Some(h1()), Some(h2())), (t1(), t2()))
+      case (Cons(h1, t1), Empty) =>
+        Some((Some(h1()), Option.empty[B]), (t1(), empty[B]))
+      case (Empty, Cons(h2, t2)) =>
+        Some((Option.empty[A], Some(h2()): Option[B]), (empty[A], t2()))
+      case _ => None
+    }
+
+  // EXERCISE5.14
+  // [難問] ここまで記述してきな関数を使って startsWith を実装せよ。
+  // この関数は、あるStreamが別のStreamのプレフィックス(接頭辞)であるかどうかを調べる。
+  // たとえば、Stream(1, 2, 3) startsWith Stream(1, 2) の結果は true になる。
+  def startsWith[A](s: Stream[A]): Boolean =
+    zipAll(s).takeWhile(_._2.isDefined).forAll {
+      case (h1, h2) => h1 == h2
+    }
+
+  // EXERCISE5.15
+  // unfold を使って tails を実装せよ。与えられたStreamに対し、
+  // tails は素のStreamから始まる入力シーケンスのサフィックス(接尾辞)である Streamを返す。
+  // たとえば、Stream(1, 2, 3) が与えられた場合は、Stream(Stream(1, 2, 3), Stream(2, 3), Stream(3), Stream()) を返す。
+  def tails: Stream[Stream[A]] =
+    unfold(this) {
+      case Empty => None
+      case s     => Some((s, s.drop(1)))
+    } append empty
+
+  // EXERCISE5.16
+  // [難問] tails を scanRight関数 として一般化せよ。
+  // この関数は中間結果のストリームを返す。
+  // scala> Stream(1, 2, 3).scanRight(0)(_ + _).toList
+  // res0: List[Int] = List(6, 5, 4, 3)
+  def scanRight[B](z: B)(f: (A, => B) => B): Stream[B] =
+    foldRight((z, Stream(z)))((a, b) => {
+      lazy val b1 = b
+      val b2 = f(a, b1._1)
+      (b2, cons(b2, b1._2))
+    })._2
 }
 
 case object Empty extends Stream[Nothing]
