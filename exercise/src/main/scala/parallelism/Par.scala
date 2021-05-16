@@ -113,11 +113,17 @@ object Par {
     }
 
   // EXERCISE7.13
-  // この新しいプリミティブ chooser を実装し、それを使って choice と choiceNを実装せよ。
+  // この新しいプリミテブ chooser を実装し、それを使って choice と choiceNを実装せよ。
   def chooser[A, B](pa: Par[A])(choices: A => Par[B]): Par[B] =
     es => {
       val a: A = run(es)(pa).get
       run(es)(choices(a))
+    }
+
+  def flatMap[A, B](p: Par[A])(f: A => Par[B]): Par[B] =
+    es => {
+      val a = run(es)(p).get
+      run(es)(f(a))
     }
 
   def choiceUseChooser[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
@@ -125,4 +131,16 @@ object Par {
 
   def choiceNUseChooser[A](n: Par[Int])(choices: List[Par[A]]): Par[A] =
     chooser(n)(idx => choices(idx))
+
+  // EXERCISE7.14
+  // joinを実装せよ。joinを使ってflatMapを実装する方法はわかるか。
+  // また、flatMapを使ってjoinを実装することは可能か。
+  def join[A](a: Par[Par[A]]): Par[A] =
+    es => run(es)(run(es)(a).get())
+
+  def joinUseFlatMap[A](a: Par[Par[A]]): Par[A] =
+    flatMap(a)(x => x)
+
+  def flatMapUseJoin[A, B](p: Par[A])(f: A => Par[B]): Par[B] =
+    join(map(p)(f))
 }
